@@ -1,14 +1,15 @@
 #!/bin/bash
 add_envelope_from() {
   FILE=$1
-  sed -i /^[xX]-[eE][nN][vV][eE][lL][oO][pP][eE]-[fF][rR][oO][mM]:.*/d "$FILE"
-  sed -i '1 i\x-envelope-from: <'"$MAIL_ADDRESS"'>' "$FILE"
+  # Use also "to" here, because piler filters mails that have an envelope-from with the own address
+  sed -i /^[xX]-[eE][nN][vV][eE][lL][oO][pP][eE]-[tT][oO]:.*/d "$FILE"
+  sed -i '1 i\x-envelope-to: <x-envelope-from_'"$MAIL_ADDRESS"'>' "$FILE"
 }
 
 add_envelope_to() {
   FILE=$1
   sed -i /^[xX]-[eE][nN][vV][eE][lL][oO][pP][eE]-[tT][oO]:.*/d "$FILE"
-  sed -i '1 i\x-envelope-to: <'"$MAIL_ADDRESS"'>' "$FILE"
+  sed -i '1 i\x-envelope-to: <x-envelope-to_'"$MAIL_ADDRESS"'>' "$FILE"
 }
 
 
