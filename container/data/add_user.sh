@@ -4,7 +4,6 @@ if [ -f /user_added.flag ] ; then
 fi
 echo "Add user"
 
-USER_UID=2
 PASS=$(php hash_password.php $USER_PASSWORD)
 sleep 30
 mysql -h$MYSQL_HOSTNAME -u$MYSQL_USER -p$MYSQL_PASSWORD --database=$MYSQL_DATABASE -e 'update user set password = "'"$PASS"'" where uid=0;'

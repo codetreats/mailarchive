@@ -8,8 +8,7 @@ chmod +x config.cfg
 
 export MAIL_ADDRESS
 export USER_PASSWORD
-export IMPORT_SENT
-export IMPORT_RECEIVED
+export IMPORT
 export SERVER_PORT
 export SUBNET
 export MAILARCHIVE_HOST
@@ -19,11 +18,14 @@ export DB_ROOT_PASSWORD=$(cat /proc/sys/kernel/random/uuid)
 export USERNAME=$(echo $MAIL_ADDRESS | cut -d '@' -f1)
 export DOMAIN=$(echo $MAIL_ADDRESS | cut -d '@' -f2)
 
-mkdir -p $IMPORT_SENT
-mkdir -p $IMPORT_RECEIVED
-rm -rf $IMPORT_SENT/*
-rm -rf $IMPORT_RECEIVED/*
+mkdir -p $IMPORT
 
+if [[ $IMPORT == "" ]] ; then
+  echo "Import-Folder not configured"
+  exit 1
+fi
+echo "Clear $IMPORT"
+rm -rf $IMPORT/*
 
 rm_container() {
   CONTAINER_NAME=$1

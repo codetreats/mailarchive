@@ -28,9 +28,9 @@ services:
       - USER_PASSWORD=${USER_PASSWORD}
       - USERNAME=${USERNAME}
       - DOMAIN=${DOMAIN}
+      - USER_UID=2
     volumes:
-      - ${IMPORT_RECEIVED}:/import/received
-      - ${IMPORT_SENT}:/import/sent
+      - ${IMPORT}:/import
     ports:
       - ${SERVER_PORT}:80
     networks:
