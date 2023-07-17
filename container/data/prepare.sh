@@ -16,4 +16,6 @@ mysql -h$MYSQL_HOSTNAME -u$MYSQL_USER -p$MYSQL_PASSWORD --database=$MYSQL_DATABA
 mysql -h$MYSQL_HOSTNAME -u$MYSQL_USER -p$MYSQL_PASSWORD --database=$MYSQL_DATABASE -e 'insert into domain (domain, mapped) VALUES ("'"$DOMAIN"'","'"$DOMAIN"'");'
 mysql -h$MYSQL_HOSTNAME -u$MYSQL_USER -p$MYSQL_PASSWORD --database=$MYSQL_DATABASE -e 'insert into domain_user (domain, uid) VALUES ("'"$DOMAIN"'",'"$USER_UID"');'
 mysql -h$MYSQL_HOSTNAME -u$MYSQL_USER -p$MYSQL_PASSWORD --database=$MYSQL_DATABASE -e 'insert into email (uid,email) VALUES ('"$USER_UID"', "'"$USERNAME@$DOMAIN"'");'
+mysql -h$MYSQL_HOSTNAME -u$MYSQL_USER -p$MYSQL_PASSWORD --database=$MYSQL_DATABASE -e 'insert into email (uid,email) VALUES ('"$USER_UID"', "x-envelope-to_'"$USERNAME@$DOMAIN"'");'
+mysql -h$MYSQL_HOSTNAME -u$MYSQL_USER -p$MYSQL_PASSWORD --database=$MYSQL_DATABASE -e 'insert into email (uid,email) VALUES ('"$USER_UID"', "x-envelope-from_'"$USERNAME@$DOMAIN"'");'
 touch /prepared.flag

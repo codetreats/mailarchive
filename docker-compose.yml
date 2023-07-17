@@ -8,9 +8,9 @@ services:
       - MYSQL_USER=mailarchive
       - MYSQL_PASSWORD=${DB_ROOT_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
-    #networks:
-    #  ${NETWORK_NAME}:
-    #    ipv4_address: ${SUBNET}.2
+    networks:
+      mailarchive-net:
+        ipv4_address: ${SUBNET}.2
     ports:
       - ${SUBNET}.1:3306:3306
     restart: always
@@ -30,16 +30,17 @@ services:
       - DOMAIN=${DOMAIN}
       - USER_UID=2
     volumes:
-      - ${IMPORT}:/import
+      - ${IMPORT_SENT}:/import/sent
+      - ${IMPORT_RECEIVED}:/import/received
     ports:
       - ${SERVER_PORT}:80
-    #networks:
-    #  ${NETWORK_NAME}:
-    #    ipv4_address: ${SUBNET}.3
+    networks:
+      mailarchive-net:
+        ipv4_address: ${SUBNET}.3
     restart: always
 
 networks:
-  ${NETWORK_NAME}:
+  mailarchive-net:
     ipam:
       driver: default
       config:

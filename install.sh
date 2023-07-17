@@ -3,12 +3,20 @@ set -e
 cd $(dirname "$0")
 BASEDIR=$(pwd)
 
-chmod +x config.cfg
-. ./config.cfg
+CONFIG=$1
+if [[ $CONFIG == "" ]] ; then
+  CONFIG=config.cfg
+fi
+
+echo "Use config: $CONFIG"
+
+chmod +x $CONFIG
+. $CONFIG
 
 export MAIL_ADDRESS
 export USER_PASSWORD
-export IMPORT
+export IMPORT_SENT
+export IMPORT_RECEIVED
 export SERVER_PORT
 export SUBNET
 export MAILARCHIVE_HOST
@@ -19,7 +27,8 @@ export DB_ROOT_PASSWORD=$(cat /proc/sys/kernel/random/uuid)
 export USERNAME=$(echo $MAIL_ADDRESS | cut -d '@' -f1)
 export DOMAIN=$(echo $MAIL_ADDRESS | cut -d '@' -f2)
 
-mkdir -p $IMPORT
+mkdir -p $IMPORT_SENT
+mkdir -p $IMPORT_RECEIVED
 
 rm_container() {
   CONTAINER=$1
@@ -40,4 +49,8 @@ docker build -t mailarchive:0.1.0 .
 
 # start
 cd $BASEDIR
+mkdir -p tmp/$CONTAINER_NAME
+cp docker-compose.yml tmp/$CONTAINER_NAME/
+cd tmp/$CONTAINER_NAME
+
 docker-compose up --detach
