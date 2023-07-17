@@ -1,22 +1,22 @@
 version: '3'
 services:
   mailarchive-db:
-    container_name: "mailarchive-db"
+    container_name: "${CONTAINER_NAME}-db"
     image: "mariadb:lts-jammy"
     environment:
       - MYSQL_DATABASE=mailarchive
       - MYSQL_USER=mailarchive
       - MYSQL_PASSWORD=${DB_ROOT_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
-    networks:
-      mailarchive-net1:
-        ipv4_address: ${SUBNET}.2
+    #networks:
+    #  ${NETWORK_NAME}:
+    #    ipv4_address: ${SUBNET}.2
     ports:
       - ${SUBNET}.1:3306:3306
     restart: always
 
   mailarchive-server:
-    container_name: "mailarchive-server"
+    container_name: "${CONTAINER_NAME}-server"
     image: "mailarchive:0.1.0"
     environment:
       - MYSQL_HOSTNAME=${SUBNET}.1
@@ -33,13 +33,13 @@ services:
       - ${IMPORT}:/import
     ports:
       - ${SERVER_PORT}:80
-    networks:
-      mailarchive-net1:
-        ipv4_address: ${SUBNET}.3
+    #networks:
+    #  ${NETWORK_NAME}:
+    #    ipv4_address: ${SUBNET}.3
     restart: always
 
 networks:
-  mailarchive-net1:
+  ${NETWORK_NAME}:
     ipam:
       driver: default
       config:

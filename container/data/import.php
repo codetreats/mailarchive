@@ -30,14 +30,29 @@ function find_mail_addresses_in_file($file)
     return $addresses;
 }
 
+function find_mail_files_recursive($directory, &$files)
+{
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($directory, RecursiveDirectoryIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::SELF_FIRST
+    );
+
+    foreach ($iterator as $file) {
+        if ($file->isFile() && $file->getExtension() === 'eml') {
+            $files[] = $file->getPathname();
+        }
+    }
+}
+
 $mysqlHostname = getenv("MYSQL_HOSTNAME");
 $mysqlUser = getenv("MYSQL_USER");
 $mysqlPassword = getenv("MYSQL_PASSWORD");
 $mysqlDatabase = getenv("MYSQL_DATABASE");
+$sleepTime = intval($argv[1]);
 
 while (true) {
     echo "[IMPORTER] Sleep" . PHP_EOL;
-    sleep(300);
+    sleep($sleepTime);
 
     $mysqli = new mysqli($mysqlHostname, $mysqlUser, $mysqlPassword, $mysqlDatabase);
 
@@ -52,7 +67,8 @@ while (true) {
         mkdir('/var/piler/import', 0777, true);
     }
 
-    $mailFiles = glob("/import/*.eml");
+    $mailFiles = [];
+    find_mail_files_recursive("/import", $mailFiles);
     foreach ($mailFiles as $mail) {
         $filename = uniqid();
         echo "[IMPORTER] Process mail: $mail" . PHP_EOL;
@@ -62,10 +78,10 @@ while (true) {
         foreach($addresses as $address) {
             $username = explode("@", $address)[0];
             $domain = explode("@", $address)[1];
-            if (!in_array($domain, $domains) && !in_array($domain, $newDomains)) {
+            if (strlen($domain) < 60 && !in_array($domain, $domains) && !in_array($domain, $newDomains) && strlen($domain)) {
                 array_push($newDomains, $domain);
             }
-            if (!in_array($address, $mailAddresses) && !in_array($address, $newMails)) {
+            if (strlen($address) < 120 && !in_array($address, $mailAddresses) && !in_array($address, $newMails)) {
                 array_push($newMails, $address);
             }
         }

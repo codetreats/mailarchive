@@ -12,6 +12,7 @@ export IMPORT
 export SERVER_PORT
 export SUBNET
 export MAILARCHIVE_HOST
+export CONTAINER_NAME
 
 export DB_USER=mailarchive
 export DB_ROOT_PASSWORD=$(cat /proc/sys/kernel/random/uuid)
@@ -20,25 +21,18 @@ export DOMAIN=$(echo $MAIL_ADDRESS | cut -d '@' -f2)
 
 mkdir -p $IMPORT
 
-if [[ $IMPORT == "" ]] ; then
-  echo "Import-Folder not configured"
-  exit 1
-fi
-echo "Clear $IMPORT"
-rm -rf $IMPORT/*
-
 rm_container() {
-  CONTAINER_NAME=$1
-  if [[ $(docker ps -q --filter "name=$CONTAINER_NAME"  | wc -l) -gt 0 ]]
+  CONTAINER=$1
+  if [[ $(docker ps -q --filter "name=$CONTAINER"  | wc -l) -gt 0 ]]
   then
-     echo "Remove $CONTAINER_NAME"
-     docker rm -f $CONTAINER_NAME
+     echo "Remove $CONTAINER"
+     docker rm -f $CONTAINER
   fi
 }
 
 # remove old container
-rm_container mailarchive-db
-rm_container mailarchive-server
+rm_container "$CONTAINER_NAME"-db
+rm_container "$CONTAINER_NAME"-server
 
 # build image
 cd $BASEDIR/container
