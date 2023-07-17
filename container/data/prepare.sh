@@ -3,14 +3,20 @@ if [ -f /prepared.flag ] ; then
   exit
 fi
 
+echo "[PREPARE] Prepare DB"
+mysql -h$MYSQL_HOSTNAME -uroot -p$MYSQL_PASSWORD -e "CREATE DATABASE $MYSQL_DATABASE;"
+mysql -h$MYSQL_HOSTNAME -uroot -p$MYSQL_PASSWORD --database=$MYSQL_DATABASE -e "CREATE USER '$MYSQL_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';"
+mysql -h$MYSQL_HOSTNAME -uroot -p$MYSQL_PASSWORD --database=$MYSQL_DATABASE -e "GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'localhost';"
+mysql -h$MYSQL_HOSTNAME -uroot -p$MYSQL_PASSWORD --database=$MYSQL_DATABASE -e "FLUSH PRIVILEGES;"
+
 echo "[PREPARE] Adapt config"
 sed -i 's/thread_stack.*=.*/thread_stack            = 512M/g' /etc/piler/manticore.conf
 mysql -h$MYSQL_HOSTNAME -u$MYSQL_USER -p$MYSQL_PASSWORD --database=$MYSQL_DATABASE -e 'insert into option (key, value) VALUES ("enable_purge", 0);'
 
-
-echo "[PREPARE] Add user"
-PASS=$(php hash_password.php $USER_PASSWORD)
 sleep 30
+
+PASS=$(php hash_password.php $USER_PASSWORD)
+echo "[PREPARE] Adapt piler settings"
 mysql -h$MYSQL_HOSTNAME -u$MYSQL_USER -p$MYSQL_PASSWORD --database=$MYSQL_DATABASE -e 'update user set password = "'"$PASS"'" where uid=0;'
 mysql -h$MYSQL_HOSTNAME -u$MYSQL_USER -p$MYSQL_PASSWORD --database=$MYSQL_DATABASE -e 'insert into user (uid, username, realname, password, domain) VALUES ('"$USER_UID"', "'"$USERNAME"'","'"$USERNAME"'","'"$PASS"'","'"$DOMAIN"'");'
 mysql -h$MYSQL_HOSTNAME -u$MYSQL_USER -p$MYSQL_PASSWORD --database=$MYSQL_DATABASE -e 'insert into domain (domain, mapped) VALUES ("'"$DOMAIN"'","'"$DOMAIN"'");'
