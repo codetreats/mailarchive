@@ -36,6 +36,8 @@ then
      docker rm -f $CONTAINER_NAME
 fi
 
+docker image prune -f
+
 # build image
 cd $BASEDIR/container
 docker build -t mailarchive:0.1.0 .

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 if [ -f /prepared.flag ] ; then
   exit
 fi
@@ -14,7 +15,7 @@ sleep 30
 echo "[PREPARE] Adapt config"
 sed -i 's/thread_stack.*=.*/thread_stack            = 512M/g' /etc/piler/manticore.conf
 sed -i 's/#mailpreviewframe{/#mailpreviewframe{height:400px;/g' /var/piler/www/view/theme/default/assets/css/metro-bootstrap.css
-mysql -h$MYSQL_HOSTNAME -u$MYSQL_USER -p$MYSQL_PASSWORD --database=$MYSQL_DATABASE -e 'insert into option (key, value) VALUES ("enable_purge", 0);'
+mysql -h$MYSQL_HOSTNAME -u$MYSQL_USER -p$MYSQL_PASSWORD --database=$MYSQL_DATABASE -e 'INSERT INTO `option` (`key`, `value`) VALUES ("enable_purge", "0");'
 
 
 PASS=$(php hash_password.php $USER_PASSWORD)
