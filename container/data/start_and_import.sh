@@ -5,5 +5,5 @@ sleep 10
 ./prepare.sh &
 sleep 10
 ./start.sh &
-./import.sh &
-sleep infinity
+sleep 10
+./import.sh

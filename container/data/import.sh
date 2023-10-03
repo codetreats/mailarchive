@@ -15,14 +15,19 @@ add_envelope_to() {
 
 while true
 do
-  echo "Sleep"
-  sleep 300
+
   cd /tmp
   rm -rf /tmp/import
   mkdir -p /tmp/import
   mkdir -p /var/piler/import
 
-
+  # Before import: unzip all compressed mails
+  find /import -name "*.eml.gz" -print0 | while read -d $'\0' MAIL; 
+  do
+    FILENAME=$(cat /proc/sys/kernel/random/uuid)
+    echo "Unzip COMPRESSED mail: $MAIL"
+    gzip -d "$MAIL"
+  done
 
   find /import/received -name "*.eml" -print0 | while read -d $'\0' MAIL; 
   do
@@ -47,4 +52,8 @@ do
   pilerimport -d /var/piler/import
 
   rm -rf /var/piler/import/*
+
+  date
+  echo "Sleep $SLEEPTIME seconds"
+  sleep $SLEEPTIME
 done

@@ -2,7 +2,7 @@ version: '3'
 services:
   mailarchive-server:
     container_name: "${CONTAINER_NAME}"
-    image: "mailarchive:0.1.0"
+    image: "mailarchive:master"
     environment:
       - MYSQL_HOSTNAME=127.0.0.1
       - MYSQL_DATABASE=mailarchive
@@ -14,6 +14,7 @@ services:
       - USERNAME=${USERNAME}
       - DOMAIN=${DOMAIN}
       - USER_UID=2
+      - SLEEPTIME=3600
     volumes:
       - ${IMPORT_SENT}:/import/sent
       - ${IMPORT_RECEIVED}:/import/received
